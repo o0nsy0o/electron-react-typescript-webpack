@@ -1,9 +1,10 @@
 /**
  * Entry point of the Election app.
  */
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, ipcMain } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
+import * as walk from 'walk-sync';
 
 let mainWindow: Electron.BrowserWindow | null;
 
@@ -14,17 +15,18 @@ function createWindow(): void {
         width: 800,
         webPreferences: {
             webSecurity: false,
-            devTools: process.env.NODE_ENV === 'production' ? false : true
-        }
+            devTools: process.env.NODE_ENV === 'production' ? false : true,
+        },
     });
 
     // and load the index.html of the app.
+    console.log(path.join(__dirname, './index.html'));
     mainWindow.loadURL(
         url.format({
             pathname: path.join(__dirname, './index.html'),
             protocol: 'file:',
-            slashes: true
-        })
+            slashes: true,
+        }),
     );
 
     // Emitted when the window is closed.
@@ -60,3 +62,8 @@ app.on('activate', () => {
 
 // In this file you can include the rest of your app"s specific main process
 // code. You can also put them in separate files and require them here.
+
+ipcMain.on('newModal', (event: any, data: any) => {
+    console.log(event, data);
+    console.log('1234');
+});

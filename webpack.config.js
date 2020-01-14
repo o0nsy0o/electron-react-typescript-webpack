@@ -1,30 +1,18 @@
-const lodash = require('lodash');
+const merge = require('webpack-merge');
 const CopyPkgJsonPlugin = require('copy-pkg-json-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
-
-function srcPaths(src) {
-  return path.join(__dirname, src);
-}
-
 const isEnvProduction = process.env.NODE_ENV === 'production';
 const isEnvDevelopment = process.env.NODE_ENV === 'development';
 
-// #region Common settings
-const commonConfig = {
+// 公用配置
+const commonPartConfig = {
   devtool: isEnvDevelopment ? 'source-map' : false,
   mode: isEnvProduction ? 'production' : 'development',
-  output: { path: srcPaths('dist') },
+  output: { path: path.join(__dirname, 'dist') },
   node: { __dirname: false, __filename: false },
   resolve: {
-    alias: {
-      '@': srcPaths('src'),
-      '@main': srcPaths('src/main'),
-      '@models': srcPaths('src/models'),
-      '@public': srcPaths('public'),
-      '@renderer': srcPaths('src/renderer'),
-      '@utils': srcPaths('src/utils'),
-    },
+    alias: {},
     extensions: ['.js', '.json', '.ts', '.tsx'],
   },
   module: {
@@ -32,11 +20,11 @@ const commonConfig = {
       {
         test: /\.(ts|tsx)$/,
         exclude: /node_modules/,
-        loader: 'ts-loader',
+        loader: ['ts-loader'],
       },
       {
-        test: /\.(scss|css)$/,
-        use: ['style-loader', 'css-loader'],
+        test: /\.(less)$/,
+        use: ['style-loader', 'css-loader', 'less-loader'],
       },
       {
         test: /\.(jpg|png|svg|ico|icns)$/,
@@ -48,31 +36,38 @@ const commonConfig = {
     ],
   },
 };
-// #endregion
 
-const mainConfig = lodash.cloneDeep(commonConfig);
-mainConfig.entry = './src/main/main.ts';
-mainConfig.target = 'electron-main';
-mainConfig.output.filename = 'main.bundle.js';
-mainConfig.plugins = [
-  new CopyPkgJsonPlugin({
-    remove: ['scripts', 'devDependencies', 'build'],
-    replace: {
-      main: './main.bundle.js',
-      scripts: { start: 'electron ./main.bundle.js' },
-      postinstall: 'electron-builder install-app-deps',
-    },
-  }),
+
+
+const mainPartConfig = {
+  entry: './src/main/index.ts',
+  target: 'electron-main',
+  output: { filename: 'main.bundle.js' },
+  plugins: [
+    new CopyPkgJsonPlugin({
+      remove: ['scripts', 'devDependencies', 'build'],
+      replace: {
+        main: './main.bundle.js',
+        scripts: { start: 'electron ./main.bundle.js' },
+        postinstall: 'electron-builder install-app-deps',
+      },
+    }),
+  ]
+}
+
+
+const rendererPartConfig = {
+  entry: './src/renderer/index.tsx',
+  target: 'electron-renderer',
+  output: { filename: 'renderer.bundle.js' },
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: path.resolve(__dirname, './temp/index.html'),
+    }),
+  ]
+}
+
+module.exports = [
+  merge(mainPartConfig, commonPartConfig),
+  merge(rendererPartConfig, commonPartConfig),
 ];
-
-const rendererConfig = lodash.cloneDeep(commonConfig);
-rendererConfig.entry = './src/renderer/renderer.tsx';
-rendererConfig.target = 'electron-renderer';
-rendererConfig.output.filename = 'renderer.bundle.js';
-rendererConfig.plugins = [
-  new HtmlWebpackPlugin({
-    template: path.resolve(__dirname, './public/index.html'),
-  }),
-];
-
-module.exports = [mainConfig, rendererConfig];

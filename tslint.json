@@ -1,42 +1,102 @@
 {
-  "defaultSeverity": "error",
   "extends": [
-    "tslint:recommended",
-    "tslint-microsoft-contrib"
+    "tslint:recommended"
   ],
-  "jsRules": {},
-  "rules": {
-    "align": [true, "statements", "members", "elements"],
-    "export-name": [
+  "defaultSeverity": "warning",
+  "jsRules": {
+    "arrow-parens": false,
+    "forin": false,
+    "max-line-length": [
+      false
+    ],
+    "no-bitwise": false,
+    "no-console": false,
+    "no-conditional-assignment": false,
+    "no-debugger": false,
+    "no-empty": false,
+    "no-unused-expression": true,
+    "object-literal-sort-keys": false,
+    "one-variable-per-declaration": [
+      true,
+      "ignore-for-loop"
+    ],
+    "only-arrow-functions": false,
+    "ordered-imports": false,
+    "prefer-const": true,
+    "prefer-for-of": false,
+    "quotemark": false,
+    "space-before-function-paren": [
       true,
       {
-        "ignore-case": true
+        "anonymous": "always",
+        "named": "never",
+        "asyncArrow": "always"
       }
     ],
-    "max-line-length": [true, 80],
-    "no-any": false,
-    "no-submodule-imports": false,
-    "no-implicit-dependencies": [
-      true,
-      "dev",
-      [
-        "@",
-        "@public",
-        "@main",
-        "@models",
-        "@renderer",
-        "@utils"
-      ]
-    ],
-    "no-import-side-effect": [
+    "trailing-comma": [
       true,
       {
-        "ignore-module": "(\\.css)$"
+        "multiline": "always",
+        "singleline": "never",
+        "esSpecCompliant": true
       }
     ],
-    "no-increment-decrement": ["allow-for-loops"],
-    "rulesDirectory": [
-      "node_modules/tslint-microsoft-contrib"
+    "variable-name": [
+      true,
+      "ban-keywords",
+      "check-format",
+      "allow-leading-underscore",
+      "allow-pascal-case"
     ]
+  },
+  "rules": {
+    "member-ordering": [
+      false
+    ],
+    "ordered-imports": [
+      false
+    ],
+    "object-literal-sort-keys": false,
+    "no-console": [
+      false
+    ],
+    "quotemark": [
+      true,
+      "single",
+      "jsx-double"
+    ],
+    "max-line-length": [
+      false
+    ],
+    "space-before-function-paren": [
+      true,
+      {
+        "anonymous": "always",
+        "named": "never",
+        "asyncArrow": "always"
+      }
+    ],
+    "trailing-comma": [
+      true,
+      {
+        "multiline": "always",
+        "singleline": "never",
+        "esSpecCompliant": true
+      }
+    ],
+    "prefer-for-of": false,
+    "arrow-parens": false,
+    "semicolon": [
+      true,
+      "always"
+    ],
+    "variable-name": [
+      true,
+      "ban-keywords",
+      "check-format",
+      "allow-leading-underscore",
+      "allow-pascal-case"
+    ],
+    "curly": false
   }
 }
