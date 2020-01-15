@@ -2,6 +2,7 @@
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
     "jsx": "react",
+    "lib": ["dom", "esnext"],
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"],
@@ -12,12 +13,13 @@
       "@utils/*": ["src/utils/*"]
     },
     "module": "esnext",
+    "target": "esnext",
+    "esModuleInterop": true,
     "moduleResolution": "node",
     "noImplicitAny": true,
     "noImplicitThis": true,
     "strictNullChecks": true,
     "sourceMap": true,
-    "target": "esnext"
   },
   "exclude": ["node_modules"]
 }

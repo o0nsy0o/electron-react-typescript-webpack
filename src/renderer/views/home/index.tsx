@@ -12,7 +12,7 @@ export class Home extends Component {
 
   public render() {
     return (
-      <div className="header"></div>
+      <div className="header">newModal</div>
     );
   }
 }
