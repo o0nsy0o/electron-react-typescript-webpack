@@ -63,7 +63,6 @@ app.on('activate', () => {
 // In this file you can include the rest of your app"s specific main process
 // code. You can also put them in separate files and require them here.
 
-ipcMain.on('newModal', (event: any, data: any) => {
-    console.log(event, data);
-    console.log('1234');
+ipcMain.on('newModal', (_event: any, data: any) => {
+    console.log(data);
 });
