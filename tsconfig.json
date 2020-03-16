@@ -1,25 +1,20 @@
 {
   "compilerOptions": {
-    "allowSyntheticDefaultImports": true,
-    "jsx": "react",
-    "lib": ["dom", "esnext"],
-    "baseUrl": ".",
+    "baseUrl": "./",
     "paths": {
-      "@/*": ["src/*"],
-      "@public/*": ["public/*"],
-      "@main/*": ["src/main/*"],
-      "@models/*": ["src/models/*"],
-      "@renderer*/": ["src/renderer/*"],
-      "@utils/*": ["src/utils/*"]
+      "antd": ["components/index.tsx"],
+      "antd/es/*": ["components/*"]
     },
+    "strictNullChecks": true,
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "jsx": "react",
+    "noImplicitAny": false,
     "module": "esnext",
     "target": "esnext",
-    "esModuleInterop": true,
-    "moduleResolution": "node",
-    "noImplicitAny": true,
-    "noImplicitThis": true,
-    "strictNullChecks": true,
-    "sourceMap": true,
+    "lib": ["dom", "es2018"],
+    "skipLibCheck": true
   },
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "lib", "es"]
 }

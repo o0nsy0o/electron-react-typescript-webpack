@@ -1,10 +1,10 @@
 /**
  * Entry point of the Election app.
  */
-import { app, BrowserWindow, ipcMain, dialog } from 'electron';
+import { app, BrowserWindow, ipcMain } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
-import walk from 'walk-sync';
+import walkSync from 'walk-sync';
 
 let mainWindow: Electron.BrowserWindow | null;
 
@@ -14,6 +14,7 @@ function createWindow(): void {
         height: 600,
         width: 800,
         webPreferences: {
+            nodeIntegration: true,
             webSecurity: false,
             devTools: process.env.NODE_ENV === 'production' ? false : true,
         },
@@ -56,11 +57,14 @@ app.on('activate', () => {
 });
 
 // In this file you can include the rest of your app"s specific main process code. You can also put them in separate files and require them here.
-ipcMain.on('newModal', (_event: any, data: any) => {
-    dialog.showOpenDialog({
-        properties: ['openFile', 'openDirectory'],
-    }, (files: any) => {
-        const file = walk(files, { globs: ['**/venus.config.js'] });
-        if (files) _event.sender.send('selected-directory', file);
-    });
+ipcMain.on('walk-main', (event: any, data: string) => {
+    const paths = walkSync(data, { directories: false, includeBasePath: true, globs: ['*/venus.config.js'] });
+    console.log(paths);
+    event.returnValue = paths;
+    // event.reply('walk-reply', paths);
 });
+
+// ipcMain.handle('my-invokable-ipc', async (event, ...args) => {
+//     const result = await somePromise(...args)
+//     return result
+//   })

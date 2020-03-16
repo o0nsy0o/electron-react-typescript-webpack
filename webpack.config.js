@@ -2,6 +2,7 @@ const merge = require('webpack-merge');
 const CopyPkgJsonPlugin = require('copy-pkg-json-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
+
 const isEnvProduction = process.env.NODE_ENV === 'production';
 const isEnvDevelopment = process.env.NODE_ENV === 'development';
 
@@ -23,7 +24,7 @@ const commonPartConfig = {
         loader: ['ts-loader'],
       },
       {
-        test: /\.(less)$/,
+        test: /\.(css|less)$/,
         use: ['style-loader', 'css-loader', 'less-loader'],
       },
       {
@@ -36,8 +37,6 @@ const commonPartConfig = {
     ],
   },
 };
-
-
 
 const mainPartConfig = {
   entry: './src/main/index.ts',
@@ -52,9 +51,8 @@ const mainPartConfig = {
         postinstall: 'electron-builder install-app-deps',
       },
     }),
-  ]
-}
-
+  ],
+};
 
 const rendererPartConfig = {
   entry: './src/renderer/index.tsx',
@@ -64,8 +62,8 @@ const rendererPartConfig = {
     new HtmlWebpackPlugin({
       template: path.resolve(__dirname, './temp/index.html'),
     }),
-  ]
-}
+  ],
+};
 
 module.exports = [
   merge(mainPartConfig, commonPartConfig),
