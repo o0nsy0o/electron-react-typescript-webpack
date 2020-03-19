@@ -1,70 +1,60 @@
-/**
- * Entry point of the Election app.
- */
-import { app, BrowserWindow, ipcMain } from 'electron';
-import * as path from 'path';
-import * as url from 'url';
-import walkSync from 'walk-sync';
+import { app, BrowserWindow, ipcMain, dialog } from 'electron';
+import path from 'path';
+import url from 'url';
+import Store from 'electron-store';
+import { getModule } from './getModule';
+
+const store = new Store();
 
 let mainWindow: Electron.BrowserWindow | null;
+app.allowRendererProcessReuse = true;
 
 function createWindow(): void {
-    // Create the browser window.
-    mainWindow = new BrowserWindow({
-        height: 600,
-        width: 800,
-        webPreferences: {
-            nodeIntegration: true,
-            webSecurity: false,
-            devTools: process.env.NODE_ENV === 'production' ? false : true,
-        },
-    });
+  // Create the browser window.
+  mainWindow = new BrowserWindow({
+    height: 600,
+    width: 800,
+    webPreferences: {
+      nodeIntegration: true,
+      webSecurity: true,
+      devTools: process.env.NODE_ENV === 'production' ? false : true,
+    },
+  });
 
-    // and load the index.html of the app.
-    mainWindow.loadURL(
-        url.format({
-            pathname: path.join(__dirname, './index.html'),
-            protocol: 'file:',
-            slashes: true,
-        }),
-    );
-    mainWindow.webContents.openDevTools();
+  // and load the index.html of the app.
+  mainWindow.loadURL(
+    url.format({
+      pathname: path.join(__dirname, './index.html'),
+      protocol: 'file:',
+      slashes: true,
+    }),
+  );
+  mainWindow.webContents.openDevTools();
 
-    // Emitted when the window is closed.
-    mainWindow.on('closed', () => {
-        // Dereference the window object, usually you would store windows in an array if your app supports multi windows, this is the time when you should delete the corresponding element.
-        mainWindow = null;
-    });
+  // Emitted when the window is closed.
+  mainWindow.on('closed', () => { mainWindow = null; });
 }
 
-// This method will be called when Electron has finished initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
 app.on('ready', createWindow);
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
-    // On OS X it is common for applications and their menu bar to stay active until the user quits explicitly with Cmd + Q
-    if (process.platform !== 'darwin') {
-        app.quit();
-    }
+  if (process.platform !== 'darwin') { app.quit(); }
 });
 
 app.on('activate', () => {
-    // On OS X it"s common to re-create a window in the app when the dock icon is clicked and there are no other windows open.
-    if (mainWindow === null) {
-        createWindow();
-    }
+  if (mainWindow === null) { createWindow(); }
 });
 
-// In this file you can include the rest of your app"s specific main process code. You can also put them in separate files and require them here.
-ipcMain.on('walk-main', (event: any, data: string) => {
-    const paths = walkSync(data, { directories: false, includeBasePath: true, globs: ['*/venus.config.js'] });
-    console.log(paths);
-    event.returnValue = paths;
-    // event.reply('walk-reply', paths);
+ipcMain.handle('get-default-path', async () => {
+  const p = store.get('path');
+  if (p) { return await getModule(p); }
+  return [];
 });
 
-// ipcMain.handle('my-invokable-ipc', async (event, ...args) => {
-//     const result = await somePromise(...args)
-//     return result
-//   })
+ipcMain.handle('walk', async () => {
+  const tPath = await dialog.showOpenDialog({ properties: ['openDirectory'], message: '请选择目标文件夹' });
+  store.delete('path');
+  store.set('path', tPath.filePaths[0]);
+  return await getModule(tPath.filePaths[0]);
+});

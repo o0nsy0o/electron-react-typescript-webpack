@@ -1,52 +1,57 @@
-import React, { useState } from 'react';
-import { Layout, Collapse } from 'antd';
-import { ipcRenderer } from 'electron';
-import { FileSelect } from '../common/components';
+import React, { useState, useEffect } from 'react';
+import { Layout, Collapse, List } from 'antd';
 import './style/index.less';
+import { ipcRenderer } from 'electron';
+import { IProjectArrItem, IModuleItem } from 'src/interface';
+import { ListItem } from './listItem';
 
 const { Header, Content } = Layout;
 const { Panel } = Collapse;
 
 export function Home(props) {
-  const [dataSource, changeDataSource] = useState([]);
+  const [dataSource, changeDataSource]: [IProjectArrItem[], any] = useState([]);
   const [paths, changePaths] = useState('');
+  const mount = 'mount';
+
+  useEffect(() => {
+    ipcRenderer.invoke('get-default-path').then((result) => {
+      changeDataSource(result);
+    });
+  }, [mount]);
 
   const onChange = (e) => {
     console.log(e);
-
   };
-  const text = '123';
 
-  const onFileChange = async (file) => {
-    const path = await new Promise((resolve, reject) => {
-      ipcRenderer.on('walk-reply', (_event, arg) => {
-        console.log(arg);
-        resolve(arg);
-      });
-      ipcRenderer.send('walk-main', file[0].path);
+  const openFile = () => {
+    ipcRenderer.invoke('walk').then((result) => {
+      console.log(result);
+      changeDataSource(result);
     });
-    console.log(path);
-    // changePaths(path);
-
   };
+
+  const renderItem = (item: IModuleItem) => (<ListItem item={item} />);
 
   return (
     <Layout>
       <Layout>
         <Header>
-          <FileSelect onChange={onFileChange}>{paths ? paths : '选择目录'}</FileSelect>
+          <div onClick={openFile}>选择目录</div>
         </Header>
         <Content>
           <Collapse defaultActiveKey={['1']} onChange={onChange}>
-            <Panel header="This is panel header 1" key="1">
-              <p>{text}</p>
-            </Panel>
-            <Panel header="This is panel header 2" key="2">
-              <p>{text}</p>
-            </Panel>
-            <Panel header="This is panel header 3" key="3" disabled>
-              <p>{text}</p>
-            </Panel>
+            {dataSource.map((item, index) => {
+              return (
+                <Panel header={
+                  <div className="collapse-head">
+                    <div>项目名称:{item.projectName}</div>
+                    <div className="collapse-head-tips">当前分支:{item.gitInfo.branch}</div>
+                  </div>
+                } key={index}>
+                  <List dataSource={item.module} renderItem={renderItem} />
+                </Panel>
+              );
+            })}
           </Collapse>
         </Content>
       </Layout>

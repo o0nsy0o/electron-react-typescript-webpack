@@ -1,6 +1,7 @@
 const merge = require('webpack-merge');
 const CopyPkgJsonPlugin = require('copy-pkg-json-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const nodeExternals = require('webpack-node-externals');
 const path = require('path');
 
 const isEnvProduction = process.env.NODE_ENV === 'production';
@@ -42,6 +43,7 @@ const mainPartConfig = {
   entry: './src/main/index.ts',
   target: 'electron-main',
   output: { filename: 'main.bundle.js' },
+  externals: [nodeExternals()],
   plugins: [
     new CopyPkgJsonPlugin({
       remove: ['scripts', 'devDependencies', 'build'],
