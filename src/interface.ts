@@ -13,5 +13,5 @@ export interface IGitInfo {
 
 export interface IModuleItem {
     name: string;
-    path: string;
+    path: string[];
 }

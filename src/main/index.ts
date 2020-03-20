@@ -3,6 +3,8 @@ import path from 'path';
 import url from 'url';
 import Store from 'electron-store';
 import { getModule } from './getModule';
+import { commandServe } from './commandServe';
+import { commandBuild } from './commandBuild';
 
 const store = new Store();
 
@@ -54,7 +56,14 @@ ipcMain.handle('get-default-path', async () => {
 
 ipcMain.handle('walk', async () => {
   const tPath = await dialog.showOpenDialog({ properties: ['openDirectory'], message: '请选择目标文件夹' });
-  store.delete('path');
   store.set('path', tPath.filePaths[0]);
   return await getModule(tPath.filePaths[0]);
+});
+
+ipcMain.handle('start-serve', async (_event, data) => {
+  return await commandServe(data);
+});
+
+ipcMain.handle('start-build', async (_event, data) => {
+  return await commandBuild(data);
 });

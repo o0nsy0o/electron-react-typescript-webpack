@@ -20,14 +20,12 @@ export function Home(props) {
   }, [mount]);
 
   const onChange = (e) => {
-    console.log(e);
+    // console.log(e);
   };
 
-  const openFile = () => {
-    ipcRenderer.invoke('walk').then((result) => {
-      console.log(result);
-      changeDataSource(result);
-    });
+  const openFile = async () => {
+    const result = await ipcRenderer.invoke('walk');
+    changeDataSource(result);
   };
 
   const renderItem = (item: IModuleItem) => (<ListItem item={item} />);
@@ -39,7 +37,7 @@ export function Home(props) {
           <div onClick={openFile}>选择目录</div>
         </Header>
         <Content>
-          <Collapse defaultActiveKey={['1']} onChange={onChange}>
+          <Collapse onChange={onChange}>
             {dataSource.map((item, index) => {
               return (
                 <Panel header={
